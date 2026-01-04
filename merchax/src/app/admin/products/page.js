@@ -1,64 +1,64 @@
+import Link from "next/link";
+import ProductDetail from "@/components/ProductDetail";
+
 const products = [
   {
+    id: "p1",
     name: "Classic Hoodie",
     category: "Apparel",
     price: 49.99,
     stock: 32,
-    status: "Active",
+    description: "Soft fleece hoodie with a relaxed fit and durable stitching.",
   },
   {
+    id: "p2",
     name: "Leather Wallet",
     category: "Accessories",
     price: 29.0,
     stock: 0,
-    status: "Out of Stock",
+    description: "Minimalist leather wallet with multiple card slots and a slim profile.",
   },
   {
+    id: "p3",
     name: "Running Shoes",
     category: "Footwear",
     price: 89.5,
     stock: 14,
-    status: "Active",
+    description: "Lightweight running shoes designed for everyday comfort and support.",
   },
   {
+    id: "p4",
     name: "Wireless Earbuds",
     category: "Electronics",
     price: 79.99,
     stock: 6,
-    status: "Low Stock",
+    description: "Compact earbuds with clear sound and a portable charging case.",
   },
   {
+    id: "p5",
     name: "Denim Jacket",
     category: "Apparel",
     price: 64.0,
     stock: 18,
-    status: "Active",
+    description: "Classic denim jacket with a timeless wash and comfortable fit.",
   },
 ];
-
-function StatusPill({ status }) {
-  const styles =
-    status === "Active"
-      ? "bg-emerald-50 text-emerald-700 ring-emerald-100"
-      : status === "Low Stock"
-        ? "bg-amber-50 text-amber-700 ring-amber-100"
-        : "bg-rose-50 text-rose-700 ring-rose-100";
-
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${styles}`}
-    >
-      {status}
-    </span>
-  );
-}
 
 export default function AdminProductsPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-zinc-900">Products</h1>
-        <p className="mt-1 text-sm text-zinc-500">Read-only list of products.</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-zinc-900">Products</h1>
+          <p className="mt-1 text-sm text-zinc-500">Manage your product catalog.</p>
+        </div>
+
+        <Link
+          href="/admin/products/new"
+          className="inline-flex items-center justify-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800"
+        >
+          New Product
+        </Link>
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
@@ -66,6 +66,9 @@ export default function AdminProductsPage() {
           <table className="min-w-full divide-y divide-zinc-200">
             <thead className="bg-zinc-50">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-600">
+                  Image
+                </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-600">
                   Product Name
                 </th>
@@ -78,14 +81,14 @@ export default function AdminProductsPage() {
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-600">
                   Stock
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-600">
-                  Status
-                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200">
               {products.map((p) => (
-                <tr key={p.name} className="hover:bg-zinc-50">
+                <tr key={p.id} className="hover:bg-zinc-50">
+                  <td className="px-6 py-4">
+                    <div className="h-10 w-10 rounded-lg border border-zinc-200 bg-zinc-100" />
+                  </td>
                   <td className="px-6 py-4 text-sm font-medium text-zinc-900">
                     {p.name}
                   </td>
@@ -94,15 +97,14 @@ export default function AdminProductsPage() {
                     ${p.price.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 text-sm text-zinc-600">{p.stock}</td>
-                  <td className="px-6 py-4 text-sm">
-                    <StatusPill status={p.status} />
-                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      <ProductDetail product={products[0]} />
     </div>
   );
 }
