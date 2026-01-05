@@ -2,23 +2,32 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/AuthProvider";
-
-const DUMMY_CREDENTIALS = { email: "admin@example.com", password: "password123" };
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
-  const { login } = useAuth();
 
-  const handleLogin = () => {
-    if (email === DUMMY_CREDENTIALS.email && password === DUMMY_CREDENTIALS.password) {
-      login();
+  const handleLogin = async () => {
+    setError("");
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || "Invalid email or password");
+        return;
+      }
+
       router.push("/admin/dashboard");
-    } else {
-      setError("Invalid email or password");
+    } catch {
+      setError("Login failed");
     }
   };
 
@@ -81,9 +90,7 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <p className="mt-6 text-xs text-zinc-500">
-            Use admin@example.com / password123
-          </p>
+          <p className="mt-6 text-xs text-zinc-500">Use your admin credentials.</p>
         </div>
       </div>
     </div>

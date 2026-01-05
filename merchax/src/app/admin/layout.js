@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AdminHeader from "@/components/AdminHeader";
-import AdminGuard from "@/components/AdminGuard";
+import { redirect } from "next/navigation";
+import { requireAdmin } from "../../../lib/auth";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard" },
@@ -8,7 +9,12 @@ const navItems = [
   { href: "/admin/products/new", label: "Add Product" },
 ];
 
-export default function AdminLayout({ children }) {
+export default async function AdminLayout({ children }) {
+  const admin = await requireAdmin();
+  if (!admin) {
+    redirect("/login");
+  }
+
   return (
     <div className="min-h-screen bg-zinc-50">
       <div className="flex min-h-screen">
@@ -79,7 +85,7 @@ export default function AdminLayout({ children }) {
           </header>
 
           <main className="flex-1 px-4 py-6 sm:px-6">
-            <AdminGuard>{children}</AdminGuard>
+            {children}
           </main>
         </div>
       </div>

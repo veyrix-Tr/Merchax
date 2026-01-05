@@ -1,15 +1,18 @@
 "use client";
 
-import { useAuth } from "./AuthProvider";
 import { useRouter } from "next/navigation";
 
 export default function AdminHeader() {
-  const { logout } = useAuth();
   const router = useRouter();
 
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // ignore
+    } finally {
+      router.push("/login");
+    }
   };
 
   return (

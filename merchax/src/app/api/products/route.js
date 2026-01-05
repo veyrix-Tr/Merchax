@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "../../../../lib/db";
 import Product from "../../../../models/Product";
+import { requireAdminFromRequest } from "../../../../lib/auth";
 
 const DEFAULT_PRODUCTS = [
   {
@@ -35,7 +36,12 @@ const DEFAULT_PRODUCTS = [
   },
 ];
 
-export async function GET() {
+export async function GET(request) {
+  const admin = requireAdminFromRequest(request);
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     await connectDB();
 
@@ -65,6 +71,11 @@ export async function GET() {
 }
 
 export async function POST(request) {
+  const admin = requireAdminFromRequest(request);
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     await connectDB();
 
