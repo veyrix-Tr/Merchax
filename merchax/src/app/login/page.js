@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/AuthProvider";
 
 const DUMMY_CREDENTIALS = { email: "admin@example.com", password: "password123" };
 
@@ -10,10 +11,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleLogin = () => {
     if (email === DUMMY_CREDENTIALS.email && password === DUMMY_CREDENTIALS.password) {
-      localStorage.setItem("isLoggedIn", "true");
+      login();
       router.push("/admin/dashboard");
     } else {
       setError("Invalid email or password");

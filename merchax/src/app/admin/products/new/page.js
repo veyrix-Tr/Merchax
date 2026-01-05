@@ -132,9 +132,35 @@ export default function AdminNewProductPage() {
       return;
     }
 
-    console.log(values);
-    dispatch({ type: "RESET" });
-    router.push("/admin/products");
+    (async () => {
+      try {
+        const payload = {
+          name: values.name,
+          category: values.category,
+          price: Number(values.price),
+          stock: Number(values.stock),
+          description: "",
+          images: [values.image1, values.image2].filter(Boolean),
+        };
+
+        const res = await fetch("/api/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) {
+          console.log("Failed to create product");
+          return;
+        }
+
+        await res.json();
+        dispatch({ type: "RESET" });
+        router.push("/admin/products");
+      } catch {
+        console.log("Failed to create product");
+      }
+    })();
   };
 
   return (

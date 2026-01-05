@@ -1,50 +1,35 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import ProductDetail from "@/components/ProductDetail";
 
-const products = [
-  {
-    id: "p1",
-    name: "Classic Hoodie",
-    category: "Apparel",
-    price: 49.99,
-    stock: 32,
-    description: "Soft fleece hoodie with a relaxed fit and durable stitching.",
-  },
-  {
-    id: "p2",
-    name: "Leather Wallet",
-    category: "Accessories",
-    price: 29.0,
-    stock: 0,
-    description: "Minimalist leather wallet with multiple card slots and a slim profile.",
-  },
-  {
-    id: "p3",
-    name: "Running Shoes",
-    category: "Footwear",
-    price: 89.5,
-    stock: 14,
-    description: "Lightweight running shoes designed for everyday comfort and support.",
-  },
-  {
-    id: "p4",
-    name: "Wireless Earbuds",
-    category: "Electronics",
-    price: 79.99,
-    stock: 6,
-    description: "Compact earbuds with clear sound and a portable charging case.",
-  },
-  {
-    id: "p5",
-    name: "Denim Jacket",
-    category: "Apparel",
-    price: 64.0,
-    stock: 18,
-    description: "Classic denim jacket with a timeless wash and comfortable fit.",
-  },
-];
+async function getProducts() {
+  const h = await headers();
+  const host = h.get("host");
+  const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
 
-export default function AdminProductsPage() {
+  if (!host) {
+    return [];
+  }
+
+  try {
+    const res = await fetch(`${protocol}://${host}/api/products`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return [];
+    }
+
+    const data = await res.json();
+    return Array.isArray(data?.products) ? data.products : [];
+  } catch {
+    return [];
+  }
+}
+
+export default async function AdminProductsPage() {
+  const products = await getProducts();
+
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
