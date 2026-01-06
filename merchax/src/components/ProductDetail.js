@@ -6,7 +6,15 @@ export default function ProductDetail({ product }) {
   return (
     <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
       <div className="flex items-start gap-4">
-        <div className="h-16 w-16 shrink-0 rounded-xl border border-zinc-200 bg-zinc-100" />
+        {product.image ? (
+          <img 
+            src={product.image} 
+            alt={product.name}
+            className="h-16 w-16 shrink-0 rounded-xl object-cover border border-zinc-200"
+          />
+        ) : (
+          <div className="h-16 w-16 shrink-0 rounded-xl border border-zinc-200 bg-zinc-100" />
+        )}
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-4">
             <div>

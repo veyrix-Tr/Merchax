@@ -34,8 +34,7 @@ export default function AdminNewProductPage() {
   });
 
   const imagesSchema = z.object({
-    image1: z.string().optional(),
-    image2: z.string().optional(),
+    image: z.string().optional(),
   });
 
   const initialState = {
@@ -45,8 +44,8 @@ export default function AdminNewProductPage() {
       category: "",
       price: "",
       stock: "",
-      image1: "",
-      image2: "",
+      image: "",
+      uploading: false,
     },
     errors: {},
   };
@@ -114,6 +113,49 @@ export default function AdminNewProductPage() {
     router.push("/admin/products");
   };
 
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      dispatch({ type: "SET_ERRORS", errors: { image: 'Invalid file type. Only JPEG, PNG, and WebP are allowed.' } });
+      return;
+    }
+    
+    // Validate file size (5MB max)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      dispatch({ type: "SET_ERRORS", errors: { image: 'File too large. Maximum size is 5MB.' } });
+      return;
+    }
+    
+    dispatch({ type: "SET_VALUE", field: "uploading", value: true });
+    dispatch({ type: "SET_ERRORS", errors: {} });
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Upload failed');
+      }
+      
+      const result = await response.json();
+      dispatch({ type: "SET_VALUE", field: "image", value: result.url });
+    } catch (error) {
+      dispatch({ type: "SET_ERRORS", errors: { image: error.message || 'Failed to upload image' } });
+    } finally {
+      dispatch({ type: "SET_VALUE", field: "uploading", value: false });
+    }
+  };
+
   const handleSubmit = () => {
     const a = basicSchema.safeParse(values);
     const b = pricingSchema.safeParse(values);
@@ -139,8 +181,7 @@ export default function AdminNewProductPage() {
           category: values.category,
           price: Number(values.price),
           stock: Number(values.stock),
-          description: "",
-          images: [values.image1, values.image2].filter(Boolean),
+          image: values.image,
         };
 
         const res = await fetch("/api/products", {
@@ -296,44 +337,47 @@ export default function AdminNewProductPage() {
           )}
 
           {stepIndex === 2 && (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-zinc-700" htmlFor="image1">
-                  Image URL (Placeholder)
+                <label className="text-sm font-medium text-zinc-700" htmlFor="image">
+                  Product Image
                 </label>
-                <input
-                  id="image1"
-                  type="text"
-                  value={values.image1}
-                  onChange={(e) =>
-                    dispatch({
-                      type: "SET_VALUE",
-                      field: "image1",
-                      value: e.target.value,
-                    })
-                  }
-                  placeholder="https://..."
-                  className="mt-2 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-300"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-zinc-700" htmlFor="image2">
-                  Image URL (Placeholder)
-                </label>
-                <input
-                  id="image2"
-                  type="text"
-                  value={values.image2}
-                  onChange={(e) =>
-                    dispatch({
-                      type: "SET_VALUE",
-                      field: "image2",
-                      value: e.target.value,
-                    })
-                  }
-                  placeholder="https://..."
-                  className="mt-2 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-300"
-                />
+                <div className="mt-2">
+                  <input
+                    id="image"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file);
+                    }}
+                    disabled={values.uploading}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="image"
+                    className={`inline-flex cursor-pointer items-center justify-center rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                      values.uploading
+                        ? 'border-zinc-300 bg-zinc-100 text-zinc-500 cursor-not-allowed'
+                        : 'border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50'
+                    }`}
+                  >
+                    {values.uploading ? 'Uploading...' : 'Choose Image'}
+                  </label>
+                </div>
+                {errors.image && (
+                  <p className="mt-2 text-sm text-rose-700">{errors.image}</p>
+                )}
+                {values.image && (
+                  <div className="mt-3">
+                    <img
+                      src={values.image}
+                      alt="Product preview"
+                      className="h-32 w-32 rounded-lg object-cover"
+                    />
+                    <p className="mt-2 text-xs text-zinc-500">Image uploaded successfully</p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -360,17 +404,19 @@ export default function AdminNewProductPage() {
                     <dd className="mt-1 text-sm text-zinc-900">{values.stock || "-"}</dd>
                   </div>
                   <div>
-                    <dt className="text-xs font-medium text-zinc-500">Image 1</dt>
-                    <dd className="mt-1 text-sm text-zinc-900">{values.image1 || "-"}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-medium text-zinc-500">Image 2</dt>
-                    <dd className="mt-1 text-sm text-zinc-900">{values.image2 || "-"}</dd>
+                    <dt className="text-xs font-medium text-zinc-500">Image</dt>
+                    <dd className="mt-1 text-sm text-zinc-900">
+                      {values.image ? (
+                        <img src={values.image} alt="Product" className="h-8 w-8 rounded object-cover" />
+                      ) : (
+                        "-"
+                      )}
+                    </dd>
                   </div>
                 </dl>
               </div>
 
-              {(errors.name || errors.category || errors.price || errors.stock) && (
+              {(errors.name || errors.category || errors.price || errors.stock || errors.image) && (
                 <div className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
                   Please fix the highlighted fields.
                 </div>

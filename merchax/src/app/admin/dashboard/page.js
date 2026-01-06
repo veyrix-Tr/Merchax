@@ -1,9 +1,15 @@
-export default function AdminDashboardPage() {
+import { getDashboardAnalytics } from '@/lib/analytics';
+import SalesChart from '@/components/charts/SalesChart';
+import StockChart from '@/components/charts/StockChart';
+
+export default async function AdminDashboardPage() {
+  const analytics = await getDashboardAnalytics();
+  
   const stats = [
-    { label: "Total Products", value: "128" },
-    { label: "Total Stock", value: "2,460" },
-    { label: "Categories", value: "12" },
-    { label: "Out of Stock", value: "7" },
+    { label: "Total Products", value: analytics.summary.totalProducts.toString() },
+    { label: "Total Stock", value: analytics.summary.totalStock.toLocaleString() },
+    { label: "Categories", value: analytics.summary.totalCategories.toString() },
+    { label: "Low Stock", value: analytics.summary.lowStockItems.toString() },
   ];
 
   return (
@@ -31,27 +37,45 @@ export default function AdminDashboardPage() {
         ))}
       </div>
 
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-zinc-900">Sales Overview</h2>
+          <p className="mt-1 text-sm text-zinc-500">Monthly sales performance</p>
+          <div className="mt-6">
+            <SalesChart data={analytics.charts.sales} />
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-zinc-900">Stock Distribution</h2>
+          <p className="mt-1 text-sm text-zinc-500">Stock levels by category</p>
+          <div className="mt-6">
+            <StockChart data={analytics.charts.stockDistribution} />
+          </div>
+        </div>
+      </div>
+
       <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-zinc-900">Quick Notes</h2>
+            <h2 className="text-lg font-semibold text-zinc-900">Quick Stats</h2>
             <p className="mt-1 text-sm text-zinc-500">
-              Static content for admin dashboard layout.
+              Key inventory metrics at a glance.
             </p>
           </div>
         </div>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div className="rounded-xl bg-zinc-50 p-4">
-            <div className="text-sm font-medium text-zinc-900">Top Category</div>
-            <div className="mt-1 text-sm text-zinc-600">Accessories</div>
+            <div className="text-sm font-medium text-zinc-900">Total Value</div>
+            <div className="mt-1 text-sm text-zinc-600">${analytics.summary.totalValue.toLocaleString()}</div>
           </div>
           <div className="rounded-xl bg-zinc-50 p-4">
-            <div className="text-sm font-medium text-zinc-900">Low Stock</div>
-            <div className="mt-1 text-sm text-zinc-600">12 products</div>
+            <div className="text-sm font-medium text-zinc-900">Low Stock Items</div>
+            <div className="mt-1 text-sm text-zinc-600">{analytics.summary.lowStockItems} products</div>
           </div>
           <div className="rounded-xl bg-zinc-50 p-4">
             <div className="text-sm font-medium text-zinc-900">Last Update</div>
-            <div className="mt-1 text-sm text-zinc-600">Today</div>
+            <div className="mt-1 text-sm text-zinc-600">Live data</div>
           </div>
         </div>
       </div>

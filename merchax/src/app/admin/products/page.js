@@ -76,7 +76,15 @@ export default async function AdminProductsPage() {
               {products.map((p) => (
                 <tr key={p.id} className="hover:bg-zinc-50">
                   <td className="px-6 py-4">
-                    <div className="h-10 w-10 rounded-lg border border-zinc-200 bg-zinc-100" />
+                    {p.image ? (
+                      <img 
+                        src={p.image} 
+                        alt={p.name}
+                        className="h-10 w-10 rounded-lg object-cover border border-zinc-200"
+                      />
+                    ) : (
+                      <div className="h-10 w-10 rounded-lg border border-zinc-200 bg-zinc-100" />
+                    )}
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-zinc-900">
                     {p.name}
