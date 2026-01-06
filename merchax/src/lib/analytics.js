@@ -1,4 +1,4 @@
-import { connectDB } from '@/lib/db';
+import { connectDB } from '@/lib/db.js';
 import Product from '@/models/Product';
 
 // Generate mock sales data for the last 6 months

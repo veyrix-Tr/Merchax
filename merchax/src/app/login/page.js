@@ -6,11 +6,17 @@ import { useRouter } from "next/navigation";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
   const handleLogin = async () => {
+    if (loading) return;
+
     setError("");
+    setLoading(true);
 
     try {
       const res = await fetch("/api/auth/login", {
@@ -22,75 +28,101 @@ export default function LoginPage() {
       if (!res.ok) {
         const data = await res.json().catch(() => null);
         setError(data?.error || "Invalid email or password");
+        setLoading(false);
         return;
       }
 
       router.push("/admin/dashboard");
     } catch {
-      setError("Login failed");
+      setError("Something went wrong. Please try again.");
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white shadow-sm">
-        <div className="p-6 sm:p-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h1 className="text-xl font-semibold text-zinc-900">Admin Login</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-zinc-100 to-zinc-200 px-4">
+      <div className="w-full max-w-md">
+        <div className="rounded-2xl bg-white shadow-xl ring-1 ring-zinc-200">
+          <div className="p-6 sm:p-8">
+            {/* Header */}
+            <div className="mb-6">
+              <h1 className="text-2xl font-semibold text-zinc-900">
+                Admin Login
+              </h1>
               <p className="mt-1 text-sm text-zinc-500">
-                Enter your details to access the dashboard.
+                Sign in to access your dashboard
               </p>
             </div>
-          </div>
 
-          <div className="mt-6 space-y-4">
+            {/* Error */}
             {error && (
-              <div className="rounded-lg bg-rose-50 p-3 text-sm text-rose-700">
+              <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
                 {error}
               </div>
             )}
-            <div>
-              <label className="text-sm font-medium text-zinc-700" htmlFor="email">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@example.com"
-                className="mt-2 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none ring-0 focus:border-zinc-300 focus:outline-none"
-              />
-            </div>
 
-            <div>
-              <label
-                className="text-sm font-medium text-zinc-700"
-                htmlFor="password"
+            {/* Form */}
+            <div className="space-y-4">
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-zinc-700"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@example.com"
+                  className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 transition focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-zinc-700"
+                >
+                  Password
+                </label>
+                <div className="relative mt-1">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full rounded-lg border border-zinc-300 px-3 py-2 pr-10 text-sm text-zinc-900 transition focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-2 flex items-center text-xs text-zinc-500 hover:text-zinc-700"
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Button */}
+              <button
+                onClick={handleLogin}
+                disabled={loading}
+                className="mt-2 inline-flex w-full items-center justify-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-70"
               >
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="password123"
-                className="mt-2 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none ring-0 focus:border-zinc-300 focus:outline-none"
-              />
+                {loading ? "Signing in..." : "Login"}
+              </button>
             </div>
 
-            <button
-              type="button"
-              onClick={handleLogin}
-              className="mt-2 inline-flex w-full items-center justify-center rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-800"
-            >
-              Login
-            </button>
+            {/* Footer */}
+            <p className="mt-6 text-center text-xs text-zinc-500">
+              Secure admin access only
+            </p>
           </div>
-
-          <p className="mt-6 text-xs text-zinc-500">Use your admin credentials.</p>
         </div>
       </div>
     </div>
