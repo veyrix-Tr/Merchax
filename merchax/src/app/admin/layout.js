@@ -1,7 +1,7 @@
 import Link from "next/link";
 import AdminHeader from "@/components/AdminHeader";
 import { redirect } from "next/navigation";
-import { requireAdmin } from "../../../lib/auth";
+import { requireAdmin } from "@/lib/auth";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard" },

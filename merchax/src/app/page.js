@@ -2,63 +2,89 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen bg-zinc-100 text-zinc-900">
+      <main className="mx-auto flex min-h-screen max-w-6xl flex-col px-8 py-12">
+        {/* Header */}
+        <header className="mb-12 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-black text-white">
+              <span className="text-sm font-semibold">AD</span>
+            </div>
+            <div>
+              <h1 className="text-lg font-semibold">Admin Dashboard</h1>
+              <p className="text-sm text-zinc-500">
+                Product management system
+              </p>
+            </div>
+          </div>
+
+          <button className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium hover:bg-zinc-200">
+            Logout
+          </button>
+        </header>
+
+        {/* Welcome Section */}
+        <section className="mb-10">
+          <h2 className="text-3xl font-semibold tracking-tight">
+            Welcome back, Admin
+          </h2>
+          <p className="mt-2 max-w-xl text-zinc-600">
+            Manage products, monitor inventory, and review performance from one
+            central dashboard.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+        </section>
+
+        {/* Stats */}
+        <section className="mb-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { label: "Total Products", value: "128" },
+            { label: "Active Products", value: "102" },
+            { label: "Out of Stock", value: "9" },
+            { label: "Categories", value: "12" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="rounded-xl border border-zinc-200 bg-white p-6"
+            >
+              <p className="text-sm text-zinc-500">{stat.label}</p>
+              <p className="mt-2 text-3xl font-semibold">{stat.value}</p>
+            </div>
+          ))}
+        </section>
+
+        {/* Actions */}
+        <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="text-lg font-semibold">Quick Actions</h3>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+              <button className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800">
+                Add New Product
+              </button>
+              <button className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium hover:bg-zinc-200">
+                View Products
+              </button>
+              <button className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-medium hover:bg-zinc-200">
+                View Analytics
+              </button>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-zinc-200 bg-white p-6">
+            <h3 className="text-lg font-semibold">System Status</h3>
+            <p className="mt-2 text-sm text-zinc-600">
+              All services are running normally. No action required.
+            </p>
+            <div className="mt-4 flex items-center gap-2 text-sm font-medium text-green-600">
+              <span className="h-2 w-2 rounded-full bg-green-600" />
+              Operational
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="mt-auto pt-12 text-sm text-zinc-500">
+          © {new Date().getFullYear()} Admin Dashboard. Internal use only.
+        </footer>
       </main>
     </div>
   );

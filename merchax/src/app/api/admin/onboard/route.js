@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
-import { connectDB } from "../../../../../lib/db";
-import Admin from "../../../../../models/Admin";
-import { requireAdminFromRequest } from "../../../../../lib/auth";
+import { connectDB } from '@/lib/db';
+import Admin from '@/models/Admin';
+import { requireAdminFromRequest } from '@/lib/auth';
 
 export async function POST(request) {
   const requester = requireAdminFromRequest(request);
